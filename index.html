@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>caardX | Prototype</title>
+    <meta name="description" content="caardX prototype — the credit card that pays its own bill.">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='25' fill='black'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='central' text-anchor='middle' font-family='sans-serif' font-weight='900' font-size='50' fill='white'%3EcX%3C/text%3E%3C/svg%3E">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- HOOK SCREEN (Splash) -->
+        <div class="screen active" id="screen-splash">
+            <div class="hook-bg"></div>
+            <div class="hook-content">
+                <div class="hook-lines">
+                    <div class="hook-line hl-1">₹0 credit history.</div>
+                    <div class="hook-line hl-2">₹0 salary proof.</div>
+                    <div class="hook-line hl-3 highlight-gradient">750 CIBIL score.</div>
+                </div>
+                <p class="hook-sub">Your parents waited 10 years for credit.<br>You won't.</p>
+                <div style="width: 100%; max-width: 320px;">
+                    <button class="btn-primary btn-gradient" id="btn-get-started">Build My Score →</button>
+                    <p class="speed-guarantee">⚡️ Takes exactly 2 minutes.</p>
+                    <button class="btn-demo" id="btn-view-demo">View Demo →</button>
+                </div>
+            </div>
+            <div class="hook-card-bg">
+                <div class="dash-card-widget hook-card-float">
+                    <div class="dash-card-inner" style="display:flex; flex-direction:column; justify-content:space-between; height:100%;">
+                        <div class="dc-top" style="margin-bottom:0"><span class="dc-logo">caardX</span></div>
+                        <div class="dc-chip" style="margin-bottom:0; width: 35px; height: 25px;"></div>
+                        <div class="dc-number" style="margin-bottom:0; font-size: 1rem;">•••• ••••</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ONBOARDING -->
+        <div class="screen" id="screen-onboard">
+            <div class="top-bar">
+                <div class="top-logo">caard<span class="tl-x">X</span></div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="ob-progress"></div>
+                </div>
+            </div>
+            <!-- Step 1: Phone -->
+            <div class="ob-step active" id="ob-step-1">
+                <div class="ob-icon">📱</div>
+                <h2>Let's verify it's you</h2>
+                <p class="ob-desc">We'll send a quick verification code</p>
+                <div class="input-group glass-card">
+                    <span class="input-prefix">+91</span>
+                    <input type="tel" id="inp-phone" maxlength="10" placeholder="98765 43210" autocomplete="off">
+                </div>
+                <button class="btn-primary" id="btn-send-otp">Send OTP</button>
+            </div>
+            <!-- Step 1b: OTP -->
+            <div class="ob-step" id="ob-step-1b">
+                <div class="ob-icon">🔐</div>
+                <h2>Quick — enter the code</h2>
+                <p class="ob-desc">Sent to +91 <span id="otp-phone-display">98765 43210</span></p>
+                <div class="otp-boxes" id="otp-boxes">
+                    <input type="text" maxlength="1" class="otp-box glass-card" data-idx="0">
+                    <input type="text" maxlength="1" class="otp-box glass-card" data-idx="1">
+                    <input type="text" maxlength="1" class="otp-box glass-card" data-idx="2">
+                    <input type="text" maxlength="1" class="otp-box glass-card" data-idx="3">
+                </div>
+                <div id="smart-otp-status" class="smart-otp-status">
+                    <div class="otp-spinner"></div>
+                    <span>Reading OTP from Messages...</span>
+                </div>
+                <div class="otp-timer" id="otp-timer">Auto-verifying<span class="dot-pulse">...</span></div>
+            </div>
+            <!-- Step 2: PAN -->
+            <div class="ob-step" id="ob-step-2">
+                <div class="ob-icon">🪪</div>
+                <h2>Almost there — PAN check</h2>
+                <p class="ob-desc">Required for credit card issuance</p>
+                <div class="input-group glass-card">
+                    <input type="text" id="inp-pan" maxlength="10" placeholder="ABCPM1234F" style="text-transform:uppercase" autocomplete="off">
+                </div>
+                <button class="btn-primary" id="btn-verify-pan">Verify PAN</button>
+                <div class="verify-status" id="pan-status"></div>
+            </div>
+            <!-- Step 3: FD -->
+            <div class="ob-step" id="ob-step-3">
+                <div class="ob-icon">💰</div>
+                <h2>Now the fun part</h2>
+                <p class="ob-desc">Your FD amount = Your credit limit</p>
+                <div class="fd-amount-display">
+                    <span class="fd-rupee">₹</span><span id="fd-amount-val" class="highlight-gradient">5,000</span>
+                </div>
+                <input type="range" id="fd-slider" min="999" max="100000" value="5000" step="1">
+                <div class="fd-range-labels">
+                    <span>₹999</span><span>₹1,00,000</span>
+                </div>
+                <div class="fd-stats">
+                    <div class="fd-stat glass-card">
+                        <span class="fd-stat-label">Monthly Interest</span>
+                        <span class="fd-stat-value" id="fd-monthly">₹34</span>
+                    </div>
+                    <div class="fd-stat glass-card">
+                        <span class="fd-stat-label">Annual Yield (8.2%)</span>
+                        <span class="fd-stat-value" id="fd-annual">₹410</span>
+                    </div>
+                    <div class="fd-stat glass-card">
+                        <span class="fd-stat-label">Credit Limit</span>
+                        <span class="fd-stat-value" id="fd-limit">₹5,000</span>
+                    </div>
+                </div>
+                <div class="trust-badges">
+                    <span class="trust-badge">🛡️ DICGC Insured up to ₹5 Lakh</span>
+                    <span class="trust-badge">🏦 Partner Small Finance Bank</span>
+                </div>
+                <button class="btn-primary btn-gradient btn-glow" id="btn-create-fd">Create FD & Issue Card</button>
+            </div>
+            <!-- Card Issued Success -->
+            <div class="ob-step" id="ob-step-success">
+                <canvas id="confetti-canvas"></canvas>
+                <div class="success-checkmark" id="success-check">
+                    <svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="25" fill="none" stroke="url(#greenGrad)" stroke-width="2"/>
+                    <defs>
+                        <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#10b981"/>
+                            <stop offset="100%" style="stop-color:#06b6d4"/>
+                        </linearGradient>
+                    </defs>
+                    <path fill="none" stroke="url(#greenGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M14 27l7 7 16-16" class="check-path"/></svg>
+                </div>
+                <h2>🎉 Level 1: Credit Builder Unlocked</h2>
+                <p class="ob-desc">Your CIBIL journey starts NOW</p>
+                <div class="mini-card-preview card-enter-anim" id="mini-card-preview">
+                    <div class="dash-card-inner" style="width: 100%; padding: 20px; display: flex; flex-direction: column; height: 100%; justify-content: space-between;">
+                        <div class="dc-top" style="margin-bottom: 0;"><span class="dc-logo">caardX</span><span class="dc-network">RuPay</span></div>
+                        <div class="dc-chip" style="margin-bottom: 0; width: 35px; height: 25px;"></div>
+                        <div class="dc-number" style="margin-bottom: 0; font-size: 1rem;">•••• •••• •••• 2247</div>
+                        <div class="dc-bottom"><span class="dc-name">ARJUN MEHTA</span><span class="dc-exp">03/29</span></div>
+                    </div>
+                </div>
+                <button class="btn-primary btn-gradient" id="btn-go-dashboard">Enter Dashboard</button>
+            </div>
+        </div>
+
+        <!-- DASHBOARD -->
+        <div class="screen" id="screen-dashboard">
+            <div class="top-bar">
+                <div class="top-logo">caard<span class="tl-x">X</span></div>
+                <div class="top-actions">
+                    <button class="icon-btn" id="btn-notif"><span class="notif-dot"></span>🔔</button>
+                    <button class="icon-btn" id="btn-settings" data-nav="settings">⚙️</button>
+                </div>
+            </div>
+            <!-- Notification Dropdown -->
+            <div class="notif-dropdown" id="notif-dropdown">
+                <div class="notif-header"><strong>Notifications</strong><span class="notif-badge">3 new</span></div>
+                <div class="notif-item notif-unread">
+                    <span class="notif-item-icon">✅</span>
+                    <div class="notif-item-content">
+                        <strong>October bill auto-settled</strong>
+                        <span>₹1,550 debited from Savings • 2h ago</span>
+                    </div>
+                </div>
+                <div class="notif-item notif-unread">
+                    <span class="notif-item-icon">📈</span>
+                    <div class="notif-item-content">
+                        <strong>CIBIL updated: +12 points</strong>
+                        <span>New score: 750 • Yesterday</span>
+                    </div>
+                </div>
+                <div class="notif-item notif-unread">
+                    <span class="notif-item-icon">💰</span>
+                    <div class="notif-item-content">
+                        <strong>FD interest credited</strong>
+                        <span>₹34.16 added to your FD • 3 days ago</span>
+                    </div>
+                </div>
+                <div class="notif-item">
+                    <span class="notif-item-icon">🛡️</span>
+                    <div class="notif-item-content">
+                        <strong>Security check passed</strong>
+                        <span>Your account is secure • 5 days ago</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Skeleton Overlay -->
+            <div id="dash-skeleton" class="skeleton-overlay" style="display:none">
+                <div class="skel-box skel-greeting"></div>
+                <div class="skel-box skel-hero"></div>
+                <div class="skel-box skel-title"></div>
+                <div class="skel-box skel-row"></div>
+                <div class="skel-box skel-row"></div>
+                <div class="skel-box skel-row"></div>
+            </div>
+            
+            <div class="dash-scroll" id="dash-scroll">
+                <div class="pull-indicator" id="pull-indicator">
+                    <div class="pull-spinner"></div>
+                    <span>Refreshing...</span>
+                </div>
+                <div class="dash-greeting" id="dash-greeting">Arjun, your money's working 💪</div>
+                
+                <!-- Hero CIBIL Display -->
+                <div class="hero-cibil-widget glass-card" id="btn-hero-cibil">
+                    <div class="hc-left">
+                        <div class="hc-label">CIBIL Score</div>
+                        <div class="hc-score highlight-gradient" id="dash-cibil-score">682</div>
+                        <div class="hc-status">Good • Climbing 📈</div>
+                    </div>
+                    <div class="hc-right">
+                        <div class="circular-progress">
+                            <svg viewBox="0 0 36 36" class="circular-chart">
+                                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path class="circle" id="dash-cibil-ring" stroke-dasharray="65, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mini Card -->
+                <div class="dash-card-widget" id="dash-card-widget">
+                    <div class="dash-card-inner">
+                        <div class="dc-top"><span class="dc-logo">caardX</span><span class="dc-network">RuPay</span></div>
+                        <div class="dc-chip"></div>
+                        <div class="dc-number" id="dc-number">•••• •••• •••• 2247</div>
+                        <div class="dc-bottom"><span class="dc-name">ARJUN MEHTA</span><span class="dc-exp">03/29</span></div>
+                    </div>
+                </div>
+                
+                <!-- Card Limit -->
+                <div class="dash-limit-wrapper glass-card">
+                    <div class="dl-top">
+                        <span class="dl-label">Available Limit</span>
+                        <span class="dl-value highlight-gradient" id="dash-limit-val">₹5,000</span>
+                    </div>
+                    <div class="dl-track">
+                        <div class="dl-fill" style="width: 100%;"></div>
+                    </div>
+                    <div class="dl-bottom">
+                        <span class="dl-spent">Total Limit: <span id="dash-total-limit">₹5,000</span></span>
+                        <span class="dl-util">0% Utilized</span>
+                    </div>
+                </div>
+                
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card glass-card">
+                        <span class="stat-icon">💰</span>
+                        <span class="stat-label">FD Balance</span>
+                        <span class="stat-value" id="stat-fd">₹5,000</span>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <span class="stat-icon">🔥</span>
+                        <span class="stat-label">Interest Earned</span>
+                        <span class="stat-value highlight-gradient" id="stat-interest">₹34.16</span>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <button class="qa-btn glass-card" data-nav="card"><span>💳</span>View Card</button>
+                    <button class="qa-btn glass-card" data-nav="txn"><span>📋</span>History</button>
+                    <button class="qa-btn glass-card" data-nav="settle"><span>⚡</span>Auto-Settle</button>
+                </div>
+                
+                <!-- Recent Transactions -->
+                <div class="section-header">
+                    <h3>Recent Transactions</h3>
+                    <button class="link-btn" data-nav="txn">View All →</button>
+                </div>
+                <div class="txn-list" id="dash-txn-list"></div>
+            </div>
+            <!-- Scanner FAB -->
+            <button class="scanner-fab btn-gradient" id="btn-open-scanner">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+                <span>Scan & Pay</span>
+            </button>
+        </div>
+
+        <!-- QR SCANNER OVERLAY -->
+        <div class="scanner-overlay" id="scanner-overlay">
+            <!-- Phase 1: Scanning -->
+            <div class="scanner-phase active" id="scan-phase-1">
+                <div class="scanner-top-bar">
+                    <button class="scanner-close" id="btn-close-scanner">✕</button>
+                    <span>Scan QR Code</span>
+                    <div style="width:32px"></div>
+                </div>
+                <div class="scanner-viewfinder">
+                    <div class="scanner-frame">
+                        <div class="sf-corner tl"></div>
+                        <div class="sf-corner tr"></div>
+                        <div class="sf-corner bl"></div>
+                        <div class="sf-corner br"></div>
+                        <div class="scanner-laser" id="scanner-laser"></div>
+                        <!-- Fake QR Code -->
+                        <div class="fake-qr" id="fake-qr">
+                            <svg viewBox="0 0 100 100" width="140" height="140">
+                                <rect x="5" y="5" width="25" height="25" rx="3" fill="rgba(255,255,255,0.8)"/>
+                                <rect x="8" y="8" width="19" height="19" rx="2" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
+                                <rect x="12" y="12" width="11" height="11" rx="1" fill="rgba(255,255,255,0.7)"/>
+                                <rect x="70" y="5" width="25" height="25" rx="3" fill="rgba(255,255,255,0.8)"/>
+                                <rect x="73" y="8" width="19" height="19" rx="2" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
+                                <rect x="77" y="12" width="11" height="11" rx="1" fill="rgba(255,255,255,0.7)"/>
+                                <rect x="5" y="70" width="25" height="25" rx="3" fill="rgba(255,255,255,0.8)"/>
+                                <rect x="8" y="73" width="19" height="19" rx="2" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
+                                <rect x="12" y="77" width="11" height="11" rx="1" fill="rgba(255,255,255,0.7)"/>
+                                <rect x="35" y="5" width="8" height="8" rx="1" fill="rgba(255,255,255,0.5)"/>
+                                <rect x="48" y="5" width="5" height="12" rx="1" fill="rgba(255,255,255,0.4)"/>
+                                <rect x="57" y="10" width="8" height="5" rx="1" fill="rgba(255,255,255,0.5)"/>
+                                <rect x="35" y="18" width="12" height="5" rx="1" fill="rgba(255,255,255,0.3)"/>
+                                <rect x="35" y="35" width="10" height="10" rx="1" fill="rgba(255,255,255,0.6)"/>
+                                <rect x="50" y="30" width="5" height="15" rx="1" fill="rgba(255,255,255,0.4)"/>
+                                <rect x="60" y="35" width="15" height="5" rx="1" fill="rgba(255,255,255,0.5)"/>
+                                <rect x="70" y="42" width="8" height="8" rx="1" fill="rgba(255,255,255,0.4)"/>
+                                <rect x="5" y="55" width="8" height="10" rx="1" fill="rgba(255,255,255,0.4)"/>
+                                <rect x="18" y="50" width="12" height="5" rx="1" fill="rgba(255,255,255,0.5)"/>
+                                <rect x="35" y="50" width="5" height="12" rx="1" fill="rgba(255,255,255,0.3)"/>
+                                <rect x="50" y="55" width="10" height="8" rx="1" fill="rgba(255,255,255,0.5)"/>
+                                <rect x="65" y="55" width="5" height="5" rx="1" fill="rgba(255,255,255,0.4)"/>
+                                <rect x="75" y="60" width="12" height="5" rx="1" fill="rgba(255,255,255,0.3)"/>
+                                <rect x="45" y="70" width="15" height="8" rx="1" fill="rgba(255,255,255,0.5)"/>
+                                <rect x="65" y="72" width="8" height="12" rx="1" fill="rgba(255,255,255,0.4)"/>
+                                <rect x="80" y="75" width="10" height="10" rx="1" fill="rgba(255,255,255,0.6)"/>
+                                <rect x="45" y="85" width="8" height="8" rx="1" fill="rgba(255,255,255,0.3)"/>
+                                <rect x="60" y="88" width="12" height="5" rx="1" fill="rgba(255,255,255,0.4)"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="scanner-hint">Point your camera at a UPI QR code</p>
+                </div>
+            </div>
+            <!-- Phase 2: Round-Up Result -->
+            <div class="scanner-phase" id="scan-phase-2">
+                <div class="scanner-top-bar">
+                    <button class="scanner-close" id="btn-close-scanner-2">✕</button>
+                    <span>Payment</span>
+                    <div style="width:32px"></div>
+                </div>
+                <div class="roundup-container">
+                    <div class="roundup-merchant">
+                        <div class="roundup-merchant-icon glass-card">🛒</div>
+                        <div class="roundup-merchant-name">QuickMart Store</div>
+                        <div class="roundup-merchant-upi">quickmart@upi</div>
+                    </div>
+                    <div class="roundup-bill-section">
+                        <div class="roundup-label">Bill Amount</div>
+                        <div class="roundup-bill-amount" id="roundup-bill">₹190</div>
+                    </div>
+                    <div class="roundup-engine-box glass-card" id="roundup-engine-box">
+                        <div class="roundup-engine-header">
+                            <span class="roundup-engine-icon">🔄</span>
+                            <span class="roundup-engine-title highlight-gradient">Round-Up Engine</span>
+                        </div>
+                        <div class="roundup-breakdown">
+                            <div class="roundup-row">
+                                <span>Bill Amount</span>
+                                <span>₹190</span>
+                            </div>
+                            <div class="roundup-row roundup-highlight">
+                                <span>Rounded Up To</span>
+                                <span class="roundup-val-big highlight-gradient">₹200</span>
+                            </div>
+                            <div class="roundup-divider"></div>
+                            <div class="roundup-row roundup-fd-row">
+                                <span>Extra → Your FD 💰</span>
+                                <span class="roundup-fd-amount highlight-gradient" id="roundup-fd-val">+₹10</span>
+                            </div>
+                        </div>
+                        <div class="roundup-note">The ₹10 round-up goes straight to your FD, growing your deposit & credit limit automatically!</div>
+                    </div>
+                    <div class="roundup-total-section glass-card" id="roundup-total-section">
+                        <div class="roundup-total-label">Total Debited</div>
+                        <div class="roundup-total-amount highlight-gradient">₹200</div>
+                        <div class="roundup-total-split">₹190 to merchant • ₹10 to your FD</div>
+                    </div>
+                    <button class="btn-primary btn-gradient btn-glow" id="btn-pay-roundup">Pay ₹200 via UPI</button>
+                </div>
+            </div>
+            <!-- Phase 3: Payment Success -->
+            <div class="scanner-phase" id="scan-phase-3">
+                <div class="scanner-top-bar">
+                    <div style="width:32px"></div>
+                    <span>Payment Successful</span>
+                    <div style="width:32px"></div>
+                </div>
+                <div class="roundup-success">
+                    <div class="roundup-success-check">
+                        <svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="25" fill="none" stroke="url(#greenGrad2)" stroke-width="2"/>
+                        <path fill="none" stroke="url(#greenGrad2)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M14 27l7 7 16-16" class="check-path-2"/></svg>
+                    </div>
+                    <div class="roundup-success-amount highlight-gradient">₹200</div>
+                    <div class="roundup-success-to">Paid to QuickMart Store</div>
+                    <div class="roundup-success-breakdown glass-card">
+                        <div class="rsb-item"><span>🛒 Merchant</span><span>₹190</span></div>
+                        <div class="rsb-item rsb-green"><span>💰 Added to FD</span><span class="highlight-gradient">+₹10</span></div>
+                        <div class="rsb-item"><span>📊 New FD Balance</span><span id="new-fd-bal">₹5,010</span></div>
+                    </div>
+                    <div class="roundup-streak glass-card">
+                        <span class="ti-icon">🔥</span>
+                        <strong>14 day saving streak!</strong>
+                    </div>
+                    <button class="btn-primary btn-gradient" id="btn-done-scanner">Done</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIRTUAL CARD -->
+        <div class="screen" id="screen-card">
+            <div class="top-bar"><button class="back-btn" data-nav="dashboard">←</button><h3>Virtual Card</h3><div></div></div>
+            <div class="card-view-container">
+                <div class="card-3d-wrapper card-enter-anim" id="card-3d-wrapper">
+                    <div class="card-3d-inner" id="card-3d-inner">
+                        <!-- Front -->
+                        <div class="card-3d-face card-front">
+                            <div class="cf-top"><span class="cf-logo">caardX</span></div>
+                            <div class="cf-chip"></div>
+                            <div class="cf-number" id="cf-number">6521 0034 8891 2247</div>
+                            <div class="cf-bottom">
+                                <div><span class="cf-label">CARD HOLDER</span><span class="cf-val">ARJUN MEHTA</span></div>
+                                <div><span class="cf-label">VALID THRU</span><span class="cf-val">03/29</span></div>
+                                <span class="cf-network">RuPay</span>
+                            </div>
+                        </div>
+                        <!-- Back -->
+                        <div class="card-3d-face card-back">
+                            <div class="cb-strip"></div>
+                            <div class="cb-cvv-area">
+                                <span class="cb-cvv-label">CVV</span>
+                                <span class="cb-cvv" id="cb-cvv">•••</span>
+                            </div>
+                            <p class="cb-note">Virtual card — use via UPI or online payments only</p>
+                            <div class="cb-bottom"><span>caardX</span><span>RuPay</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="ca-btn glass-card" id="btn-flip-card">🔄 Flip Card</button>
+                    <button class="ca-btn glass-card" id="btn-copy-number">📋 Copy Number</button>
+                    <button class="ca-btn glass-card" id="btn-reveal-cvv">👁️ Reveal CVV</button>
+                </div>
+                <div class="card-info-box glass-card">
+                    <div class="cib-row"><span>Card Type</span><span>Virtual RuPay Credit</span></div>
+                    <div class="cib-row"><span>Credit Limit</span><span id="ci-limit">₹5,000</span></div>
+                    <div class="cib-row"><span>Available</span><span id="ci-avail" class="highlight-gradient" style="font-weight:700">₹3,450</span></div>
+                    <div class="cib-row"><span>Status</span><span class="status-active">● Active</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TRANSACTIONS -->
+        <div class="screen" id="screen-txn">
+            <div class="top-bar"><button class="back-btn" data-nav="dashboard">←</button><h3>History</h3><div></div></div>
+            <div class="txn-summary" id="txn-summary"></div>
+            <div class="txn-insights glass-card">
+                <span class="ti-icon">☕</span>
+                <div class="ti-text">
+                    <strong>You love coffee</strong>
+                    <span>₹840 spent on Food & Drink this month</span>
+                </div>
+            </div>
+            <div class="month-tabs" id="month-tabs"></div>
+            <div class="txn-list full" id="txn-full-list"></div>
+        </div>
+
+        <!-- AUTO-SETTLE -->
+        <div class="screen" id="screen-settle">
+            <div class="top-bar"><button class="back-btn" data-nav="dashboard">←</button><h3>Auto-Settle</h3><div></div></div>
+            <div class="settle-container">
+                <h2 class="section-title">Your card paid itself again ✨</h2>
+                <div class="settle-toggle glass-card">
+                    <button class="stg-btn active" id="stg-savings">Savings Covers Bill</button>
+                    <button class="stg-btn" id="stg-fallback">FD Fallback</button>
+                </div>
+                <div class="settle-flow" id="settle-flow">
+                    <div class="sf-step glass-card" data-step="1">
+                        <div class="sf-icon">📄</div>
+                        <div class="sf-text"><strong>Bill Generated</strong><br><span id="sf-bill-amt">₹1,550</span></div>
+                    </div>
+                    <div class="sf-line" data-step="1"></div>
+                    <div class="sf-step glass-card" data-step="2">
+                        <div class="sf-icon">🏦</div>
+                        <div class="sf-text"><strong>Check Savings</strong><br><span id="sf-savings-status">Balance: ₹12,400</span></div>
+                    </div>
+                    <div class="sf-line" data-step="2"></div>
+                    <div class="sf-step glass-card" data-step="3" id="sf-step-3">
+                        <div class="sf-icon" id="sf-step3-icon">✅</div>
+                        <div class="sf-text" id="sf-step3-text"><strong>Debit Savings</strong><br>₹1,550 debited</div>
+                    </div>
+                    <div class="sf-line" data-step="3"></div>
+                    <div class="sf-step glass-card" data-step="4">
+                        <div class="sf-icon">📊</div>
+                        <div class="sf-text"><strong>CIBIL Updated</strong><br>On-time payment ✓</div>
+                    </div>
+                </div>
+                <button class="btn-primary btn-gradient" id="btn-replay-settle" style="margin-top:24px">▶ Replay Animation</button>
+                
+                <div class="settle-streak glass-card">
+                    <div class="streak-icon">🔥</div>
+                    <div class="streak-content">
+                        <div class="streak-number highlight-gradient" id="streak-num">6 Month Streak!</div>
+                        <div class="streak-label">On-Time Payments → CIBIL 750+ Achieved 🎉</div>
+                    </div>
+                </div>
+
+                <div class="settle-history">
+                    <h3>Settlement History</h3>
+                    <div class="sh-timeline" id="sh-timeline"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CIBIL TRACKER -->
+        <div class="screen" id="screen-cibil">
+            <div class="top-bar"><button class="back-btn" data-nav="dashboard">←</button><h3>CIBIL Tracker</h3><div></div></div>
+            <div class="cibil-container">
+                <h2 class="section-title">Your score's climbing 📈</h2>
+                <div class="cibil-score-display">
+                    <div class="cibil-arc" id="cibil-arc">
+                        <svg viewBox="0 0 200 120" id="cibil-svg">
+                            <defs>
+                                <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#ef4444"/>
+                                    <stop offset="33%" style="stop-color:#f59e0b"/>
+                                    <stop offset="66%" style="stop-color:#eab308"/>
+                                    <stop offset="100%" style="stop-color:#10b981"/>
+                                </linearGradient>
+                            </defs>
+                            <path d="M20 110 A80 80 0 0 1 180 110" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="12" stroke-linecap="round"/>
+                            <path id="cibil-arc-fill" d="M20 110 A80 80 0 0 1 180 110" fill="none" stroke="url(#arcGrad)" stroke-width="12" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="251"/>
+                        </svg>
+                        <div class="cibil-score-num highlight-gradient odometer" id="cibil-score-num">0</div>
+                        <div class="cibil-score-label">CIBIL Score</div>
+                    </div>
+                </div>
+                <div class="cibil-chart glass-card" id="cibil-chart">
+                    <canvas id="cibil-canvas" width="600" height="250"></canvas>
+                </div>
+                <div class="cibil-milestones" id="cibil-milestones"></div>
+            </div>
+        </div>
+
+        <!-- SETTINGS -->
+        <div class="screen" id="screen-settings">
+            <div class="top-bar"><button class="back-btn" data-nav="dashboard">←</button><h3>Settings</h3><div></div></div>
+            <div class="settings-container">
+                <div class="settings-group glass-card">
+                    <h4>Appearance</h4>
+                    <div class="setting-row">
+                        <div><strong>Dark Mode</strong><p>Sleek dark theme</p></div>
+                        <label class="toggle"><input type="checkbox" id="tog-darkmode" checked><span class="toggle-slider"></span></label>
+                    </div>
+                </div>
+                <div class="settings-group glass-card">
+                    <h4>Auto-Settle</h4>
+                    <div class="setting-row">
+                        <div><strong>E-Mandate Status</strong><p>Auto-debit authorization</p></div>
+                        <label class="toggle"><input type="checkbox" checked id="tog-emandate"><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="setting-row">
+                        <div><strong>Settlement Preference</strong><p>Choose primary source</p></div>
+                        <select class="setting-select glass-card" id="sel-settle-pref">
+                            <option>Savings First</option>
+                            <option>FD Only</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="settings-group glass-card">
+                    <h4>Fixed Deposit</h4>
+                    <div class="setting-row">
+                        <div><strong>Current FD</strong><p id="set-fd-current">₹5,000</p></div>
+                        <button class="btn-sm glass-card" id="btn-topup-fd">Top Up</button>
+                    </div>
+                    <div class="setting-row">
+                        <div><strong>Linked Bank</strong><p>●●●● ●●●● 4521 — SBI</p></div>
+                        <span class="status-active">● Linked</span>
+                    </div>
+                </div>
+                <div class="settings-group glass-card">
+                    <h4>Notifications</h4>
+                    <div class="setting-row">
+                        <div><strong>Bill Reminders</strong><p>Before settlement date</p></div>
+                        <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="setting-row">
+                        <div><strong>Score Updates</strong><p>Monthly CIBIL changes</p></div>
+                        <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+                    </div>
+                    <div class="setting-row">
+                        <div><strong>Transaction Alerts</strong><p>Real-time spend alerts</p></div>
+                        <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+                    </div>
+                </div>
+                <div class="settings-group glass-card">
+                    <h4>Account</h4>
+                    <div class="setting-row"><div><strong>Arjun Mehta</strong><p>+91 98765 43210</p></div></div>
+                    <div class="setting-row"><div><strong>PAN</strong><p>ABCPM••••F</p></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTTOM NAV -->
+        <nav class="bottom-nav glass-card" id="bottom-nav" style="display:none">
+            <button class="nav-tab active" data-screen="dashboard"><span class="nav-icon">🏠</span><span>Home</span></button>
+            <button class="nav-tab" data-screen="card"><span class="nav-icon">💳</span><span>Card</span></button>
+            <button class="nav-tab" data-screen="txn"><span class="nav-icon">📋</span><span>History</span></button>
+            <button class="nav-tab" data-screen="settle"><span class="nav-icon">⚡</span><span>Settle</span></button>
+            <button class="nav-tab" data-screen="cibil"><span class="nav-icon">📈</span><span>CIBIL</span></button>
+        </nav>
+
+        <!-- Toast -->
+        <div class="toast" id="toast"></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
