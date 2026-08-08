@@ -7,6 +7,10 @@ let state = {
     pan: ''
 };
 
+// Screen history stack for back button
+let screenHistory = ['splash'];
+let isPopNavigation = false;
+
 // Navigation
 function navigateTo(screenId) {
     document.querySelectorAll('.screen').forEach(s => {
@@ -23,6 +27,13 @@ function navigateTo(screenId) {
         if(nextScreen) {
             nextScreen.classList.add('active');
             state.screen = screenId;
+            
+            // Push browser history so mobile back button works within the app
+            if (!isPopNavigation) {
+                screenHistory.push(screenId);
+                history.pushState({ screen: screenId }, '', '#' + screenId);
+            }
+            isPopNavigation = false;
             
             // Show/hide bottom nav
             const nav = document.getElementById('bottom-nav');
@@ -57,6 +68,40 @@ function navigateTo(screenId) {
         }
     }, 400);
 }
+
+// Handle browser back button (Android back / swipe back)
+window.addEventListener('popstate', (e) => {
+    // If the scanner overlay is open, close it instead of navigating
+    const scanner = document.getElementById('scanner-overlay');
+    if (scanner && scanner.classList.contains('open')) {
+        scanner.classList.remove('open');
+        // Re-push the current state so back button still works for screens
+        history.pushState({ screen: state.screen }, '', '#' + state.screen);
+        return;
+    }
+    
+    // If the notification dropdown is open, close it
+    const notifDropdown = document.getElementById('notif-dropdown');
+    if (notifDropdown && notifDropdown.classList.contains('open')) {
+        notifDropdown.classList.remove('open');
+        history.pushState({ screen: state.screen }, '', '#' + state.screen);
+        return;
+    }
+    
+    // Navigate to previous screen
+    if (screenHistory.length > 1) {
+        screenHistory.pop(); // Remove current
+        const prevScreen = screenHistory[screenHistory.length - 1];
+        isPopNavigation = true;
+        navigateTo(prevScreen);
+    } else {
+        // Already at the first screen (splash), push state to prevent leaving
+        history.pushState({ screen: 'splash' }, '', '#splash');
+    }
+});
+
+// Set initial history state
+history.replaceState({ screen: 'splash' }, '', '#splash');
 
 // Bottom Nav Binding
 document.querySelectorAll('.nav-tab').forEach(tab => {
