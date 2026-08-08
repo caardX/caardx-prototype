@@ -200,7 +200,7 @@
                     <div class="pull-spinner"></div>
                     <span>Refreshing...</span>
                 </div>
-                <div class="dash-greeting" id="dash-greeting">Arjun, your money's working 💪</div>
+                <div class="dash-greeting" id="dash-greeting">Abhishek, your money's working 💪</div>
                 
                 <!-- Hero CIBIL Display -->
                 <div class="hero-cibil-widget glass-card" id="btn-hero-cibil">
@@ -272,11 +272,6 @@
                 </div>
                 <div class="txn-list" id="dash-txn-list"></div>
             </div>
-            <!-- Scanner FAB -->
-            <button class="scanner-fab btn-gradient" id="btn-open-scanner">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
-                <span>Scan & Pay</span>
-            </button>
         </div>
 
         <!-- QR SCANNER OVERLAY -->
@@ -595,7 +590,7 @@
                 </div>
                 <div class="settings-group glass-card">
                     <h4>Account</h4>
-                    <div class="setting-row"><div><strong>Arjun Mehta</strong><p>+91 98765 43210</p></div></div>
+                    <div class="setting-row"><div><strong>Abhishek Kumar</strong><p>+91 98765 43210</p></div></div>
                     <div class="setting-row"><div><strong>PAN</strong><p>ABCPM••••F</p></div></div>
                 </div>
             </div>
@@ -605,7 +600,12 @@
         <nav class="bottom-nav glass-card" id="bottom-nav" style="display:none">
             <button class="nav-tab active" data-screen="dashboard"><span class="nav-icon">🏠</span><span>Home</span></button>
             <button class="nav-tab" data-screen="card"><span class="nav-icon">💳</span><span>Card</span></button>
-            <button class="nav-tab" data-screen="txn"><span class="nav-icon">📋</span><span>History</span></button>
+            <button class="nav-scan-center" id="btn-open-scanner">
+                <div class="scan-btn-inner">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+                </div>
+                <span>Scan</span>
+            </button>
             <button class="nav-tab" data-screen="settle"><span class="nav-icon">⚡</span><span>Settle</span></button>
             <button class="nav-tab" data-screen="cibil"><span class="nav-icon">📈</span><span>CIBIL</span></button>
         </nav>

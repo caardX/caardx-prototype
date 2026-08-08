@@ -187,7 +187,7 @@ document.getElementById('btn-verify-pan').addEventListener('click', () => {
         btn.disabled = true;
         
         setTimeout(() => {
-            document.getElementById('pan-status').innerHTML = '✅ PAN Verified • Arjun Mehta';
+            document.getElementById('pan-status').innerHTML = '✅ PAN Verified • Abhishek Kumar';
             setTimeout(() => {
                 document.getElementById('ob-step-2').classList.remove('active');
                 document.getElementById('ob-step-3').classList.add('active');
@@ -273,10 +273,10 @@ function animateNumber(elementId, target, duration = 1500) {
 // Dynamic Greeting based on time of day
 function getGreeting() {
     const h = new Date().getHours();
-    if (h < 12) return 'Good morning, Arjun ☀️';
-    if (h < 17) return 'Good afternoon, Arjun 👋';
-    if (h < 21) return 'Good evening, Arjun 🌇';
-    return 'Burning the midnight oil, Arjun 🌙';
+    if (h < 12) return 'Good morning, Abhishek ☀️';
+    if (h < 17) return 'Good afternoon, Abhishek 👋';
+    if (h < 21) return 'Good evening, Abhishek 🌇';
+    return 'Burning the midnight oil, Abhishek 🌙';
 }
 
 function updateDashboardData() {
